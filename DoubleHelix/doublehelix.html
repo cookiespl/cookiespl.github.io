@@ -105,6 +105,7 @@
                 this.colorbarend = randomColor();
 
                 ResetHelix();
+                StabiliseRotationSpeed();
             }
         }
         
@@ -134,10 +135,7 @@
             .name('Rotation Speed')
             .listen()
             .onChange(value => {
-                // modify t based on the helix's CURRENT rotation with NEW rotation speed.
-                var item = meshArray[0];
-                var angle = Math.asin(item[0].position.y / helixParam.radius);
-                t = angle/helixParam.rotateSpeed;
+                StabiliseRotationSpeed();
             });
 
         const folderSizes = gui.addFolder('Sizes')
@@ -301,12 +299,11 @@
             var xPos = lerp(xPosLower,xPosUpper,normalisedIndex);
 
             // ypos and zpos
-            var angle = (t*helixParam.rotateSpeed) + angleoffset
+            var angle = (t*helixParam.rotateSpeed) + angleoffset;
             var yPos0 = Math.sin(angle) * helixParam.radius;
             var zPos0 = Math.cos(angle) * helixParam.radius;
             var yPos1 = -yPos0;
             var zPos1 = -zPos0;
-
 
             // apply new positions  to both spheres
             item[0].position.x = xPos;
@@ -354,6 +351,20 @@
             item[2].material.color.set(helixParam.colorbarstart);
             endCol.set(helixParam.colorbarend);
             item[2].material.color.lerp(endCol, normalisedIndex);
+        }
+
+        function StabiliseRotationSpeed()
+        {
+            // The entire program breaks when rotateSpeed is 0?????????
+            // So this fixes it with the power of astronomically small numbers
+            if (helixParam.rotateSpeed == 0)
+            {
+                helixParam.rotateSpeed = 1e-69;
+            }
+            // modify t based on the helix's CURRENT rotation with NEW rotation speed.
+            var item = meshArray[0];
+            var angle = Math.asin(item[0].position.y / helixParam.radius);
+            t = angle/helixParam.rotateSpeed;
         }
 
         // function to destroy the helix, clear the array, then create a new helix
