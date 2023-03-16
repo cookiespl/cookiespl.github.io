@@ -216,6 +216,14 @@
 
         // create helix
         CreateHelix();
+		
+		// create lights
+        const ambientLight = new THREE.AmbientLight(0xffffff);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        dirLight.position.x += 26;
+        scene.add(dirLight);
 
         //this function is called when the window is resized
         var MyResize = function ( )
